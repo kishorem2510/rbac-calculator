@@ -2,6 +2,8 @@
 
 A Role Based Access Control (RBAC) Calculator built with Next.js, AWS IAM and DynamoDB.
 
+Live App - https://rbac-calculator.vercel.app/
+
 ## What it does
 
 Select a role (Admin, Member, Viewer) and instantly see what AWS permissions that role has.
