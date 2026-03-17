@@ -1,36 +1,88 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# RBAC Calculator
 
-## Getting Started
+A Role Based Access Control (RBAC) Calculator built with Next.js, AWS IAM and DynamoDB.
 
-First, run the development server:
+## What it does
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+Select a role (Admin, Member, Viewer) and instantly see what AWS permissions that role has.
+
+## Tech Stack
+
+- **Next.js** — Frontend UI
+- **AWS IAM** — Role and permission management
+- **AWS DynamoDB** — Stores role permission data
+- **Tailwind CSS** — Styling
+
+## How it works
+```
+User selects a role
+        ↓
+Frontend calls API route
+        ↓
+API route fetches from DynamoDB
+        ↓
+Permission matrix displayed
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Roles
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Role | Access |
+|------|--------|
+| Admin | Full access to S3, DynamoDB, Lambda, CloudWatch, IAM |
+| Member | Limited access to S3, DynamoDB, Lambda |
+| Viewer | Read only access to S3 and DynamoDB |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Project Structure
+```
+rbac-calculator/
+├── app/
+│   ├── api/roles/route.ts   → API route (fetches from DynamoDB)
+│   ├── page.tsx             → Main UI page
+│   └── layout.tsx           → App layout
+├── lib/
+│   └── dynamodb.ts          → DynamoDB connection and queries
+├── .env.local               → AWS credentials (not pushed to GitHub)
+└── README.md
+```
 
-## Learn More
+## Setup
 
-To learn more about Next.js, take a look at the following resources:
+1. Clone the repo:
+```bash
+git clone https://github.com/your-username/rbac-calculator.git
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. Install dependencies:
+```bash
+npm install
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3. Create `.env.local` file:
+```
+AWS_ACCESS_KEY_ID=your_access_key
+AWS_SECRET_ACCESS_KEY=your_secret_key
+AWS_REGION=ap-south-1
+DYNAMODB_TABLE_NAME=RBAC-Calculator
+```
 
-## Deploy on Vercel
+4. Run the app:
+```bash
+npm run dev
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+5. Open browser:
+```
+http://localhost:3000
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## AWS Setup Required
+
+- IAM Roles created: `RBAC-Admin-Role`, `RBAC-Member-Role`, `RBAC-Viewer-Role`
+- DynamoDB Table: `RBAC-Calculator`
+- Table Partition Key: `role_name` (String)
+
+## Screenshots
+
+> Select Admin role → see full permission matrix
+> Select Member role → see limited permissions
+> Select Viewer role → see read only permissions
