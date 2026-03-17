@@ -1,6 +1,6 @@
 # RBAC Calculator
 
-A Role Based Access Control Calculator built with Next.js, AWS Lambda, AWS IAM and DynamoDB.
+A Role Based Access Control (RBAC) Calculator built with Next.js, AWS IAM and DynamoDB.
 
 ## What it does
 
@@ -114,20 +114,14 @@ npm run dev
 http://localhost:3000
 ```
 
-## How to Use
-```
-Step 1 → Select a role
-Step 2 → Check actions you want to test
-Step 3 → Click CALCULATE ACCESS
-Step 4 → See ALLOWED or BLOCKED
-```
+## AWS Setup Required
 
-## Environment Variables
+- IAM Roles created: `RBAC-Admin-Role`, `RBAC-Member-Role`, `RBAC-Viewer-Role`
+- DynamoDB Table: `RBAC-Calculator`
+- Table Partition Key: `role_name` (String)
 
-| Variable | Purpose |
-|---|---|
-| AWS_ACCESS_KEY_ID | AWS access key |
-| AWS_SECRET_ACCESS_KEY | AWS secret key |
-| AWS_REGION | AWS region |
-| DYNAMODB_TABLE_NAME | DynamoDB table name |
-| LAMBDA_API_URL | API Gateway URL |
+## Screenshots
+
+> Select Admin role → see full permission matrix
+> Select Member role → see limited permissions
+> Select Viewer role → see read only permissions
