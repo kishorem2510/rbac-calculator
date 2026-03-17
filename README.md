@@ -1,88 +1,133 @@
 # RBAC Calculator
 
-A Role Based Access Control (RBAC) Calculator built with Next.js, AWS IAM and DynamoDB.
+A Role Based Access Control Calculator built with Next.js, AWS Lambda, AWS IAM and DynamoDB.
 
 ## What it does
 
-Select a role (Admin, Member, Viewer) and instantly see what AWS permissions that role has.
-
-## Tech Stack
-
-- **Next.js** — Frontend UI
-- **AWS IAM** — Role and permission management
-- **AWS DynamoDB** — Stores role permission data
-- **Tailwind CSS** — Styling
+Select a role, choose what actions you want to perform on AWS services, click Calculate — AWS Lambda checks if that role is allowed or blocked for each action.
 
 ## How it works
 ```
-User selects a role
+User selects a Role (Admin / Member / Viewer)
         ↓
-Frontend calls API route
+User selects Actions (S3 read, Lambda invoke etc.)
         ↓
-API route fetches from DynamoDB
+User clicks CALCULATE
         ↓
-Permission matrix displayed
+Next.js sends request to API route
+        ↓
+API route calls AWS Lambda function
+        ↓
+Lambda checks permissions in DynamoDB
+        ↓
+Lambda returns ALLOWED or BLOCKED
+        ↓
+UI displays the result
 ```
+
+## Tech Stack
+
+| Technology | Purpose |
+|---|---|
+| Next.js | Frontend UI |
+| AWS Lambda | Backend calculator |
+| AWS IAM | Role and permission management |
+| AWS DynamoDB | Stores role permission data |
+| AWS API Gateway | Exposes Lambda as HTTP endpoint |
+| Tailwind CSS | Styling |
 
 ## Roles
 
 | Role | Access |
-|------|--------|
-| Admin | Full access to S3, DynamoDB, Lambda, CloudWatch, IAM |
-| Member | Limited access to S3, DynamoDB, Lambda |
-| Viewer | Read only access to S3 and DynamoDB |
+|---|---|
+| Admin | Full access — S3, DynamoDB, Lambda, CloudWatch, IAM |
+| Member | Limited access — S3, DynamoDB, Lambda only |
+| Viewer | Read only — S3 and DynamoDB read only |
 
 ## Project Structure
 ```
 rbac-calculator/
 ├── app/
-│   ├── api/roles/route.ts   → API route (fetches from DynamoDB)
-│   ├── page.tsx             → Main UI page
-│   └── layout.tsx           → App layout
+│   ├── api/
+│   │   └── roles/
+│   │       └── route.ts
+│   ├── page.tsx
+│   └── layout.tsx
 ├── lib/
-│   └── dynamodb.ts          → DynamoDB connection and queries
-├── .env.local               → AWS credentials (not pushed to GitHub)
+│   └── dynamodb.ts
+├── .env.local
 └── README.md
 ```
 
-## Setup
+## AWS Setup
 
-1. Clone the repo:
-```bash
-git clone https://github.com/your-username/rbac-calculator.git
+### IAM Roles
+| Role | Policies |
+|---|---|
+| RBAC-Admin-Role | S3 Full, DynamoDB Full, Lambda Full, CloudWatch Full, IAM ReadOnly |
+| RBAC-Member-Role | S3 Full, DynamoDB Full, Lambda Full |
+| RBAC-Viewer-Role | S3 ReadOnly, DynamoDB ReadOnly |
+
+### DynamoDB Table
+```
+Table name:    RBAC-Calculator
+Partition key: role_name (String)
 ```
 
-2. Install dependencies:
+### Lambda Function
+```
+Function name: rbac-calculator-check
+Runtime:       Node.js 20.x
+Trigger:       API Gateway (HTTP)
+Purpose:       Calculates ALLOWED or BLOCKED for each action
+```
+
+## Local Setup
+
+1. Clone the repo
+```bash
+git clone https://github.com/kishorem2510/rbac-calculator.git
+cd rbac-calculator
+```
+
+2. Install dependencies
 ```bash
 npm install
 ```
 
-3. Create `.env.local` file:
+3. Create `.env.local`
 ```
 AWS_ACCESS_KEY_ID=your_access_key
 AWS_SECRET_ACCESS_KEY=your_secret_key
 AWS_REGION=ap-south-1
 DYNAMODB_TABLE_NAME=RBAC-Calculator
+LAMBDA_API_URL=your_lambda_url
 ```
 
-4. Run the app:
+4. Run the app
 ```bash
 npm run dev
 ```
 
-5. Open browser:
+5. Open browser
 ```
 http://localhost:3000
 ```
 
-## AWS Setup Required
+## How to Use
+```
+Step 1 → Select a role
+Step 2 → Check actions you want to test
+Step 3 → Click CALCULATE ACCESS
+Step 4 → See ALLOWED or BLOCKED
+```
 
-- IAM Roles created: `RBAC-Admin-Role`, `RBAC-Member-Role`, `RBAC-Viewer-Role`
-- DynamoDB Table: `RBAC-Calculator`
-- Table Partition Key: `role_name` (String)
+## Environment Variables
 
-## Screenshots
-
-> Select Admin role → see full permission matrix
-> Select Member role → see limited permissions
-> Select Viewer role → see read only permissions
+| Variable | Purpose |
+|---|---|
+| AWS_ACCESS_KEY_ID | AWS access key |
+| AWS_SECRET_ACCESS_KEY | AWS secret key |
+| AWS_REGION | AWS region |
+| DYNAMODB_TABLE_NAME | DynamoDB table name |
+| LAMBDA_API_URL | API Gateway URL |
