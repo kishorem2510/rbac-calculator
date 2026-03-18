@@ -9,8 +9,11 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@aws-amplify/auth": "^6.19.1",
     "@aws-sdk/client-dynamodb": "^3.1010.0",
     "@aws-sdk/lib-dynamodb": "^3.1010.0",
+    "amazon-cognito-identity-js": "^6.3.16",
+    "aws-amplify": "^6.16.3",
     "next": "^15.5.13",
     "react": "19.2.3",
     "react-dom": "19.2.3"
